@@ -45,7 +45,7 @@ Start from an existing draft (skips discovery):
 
 ```mermaid
 flowchart TD
-    START(["/research-loop tension 8h"])
+    START["/research-loop tension 8h"]
     START --> CONTROLLER
 
     subgraph CONTROLLER["research-loop  —  controller"]
@@ -74,7 +74,7 @@ flowchart TD
         DEEP -->|"saturated or budget exhausted"| EDITORIAL
     end
 
-    EDITORIAL --> FINAL([("draft-final.md")])
+    EDITORIAL --> FINAL[/"draft-final.md"/]
 ```
 
 ### State files
