@@ -1,6 +1,6 @@
 # deep-research
 
-An autonomous research agent that runs 4–8 hours without human intervention. Give it a tension statement — a contradiction or unresolved question — and it produces a fully sourced thesis paper.
+An autonomous research agent that runs 4–8 hours without human intervention. Give it a topic and it produces a fully sourced thesis paper.
 
 Built on Claude and [Exa.ai](https://exa.ai).
 
@@ -13,30 +13,14 @@ export ANTHROPIC_API_KEY=your_key
 export EXA_API_KEY=your_key
 ```
 
-Open the project in Claude Code:
+## Usage
 
 ```bash
 claude
 ```
 
----
-
-## Usage
-
 ```
-/research-loop "Every attempt to own the payment intent layer failed — and now 6 teams are trying again. What's actually different this time?" 8h
-```
-
-Optional scope flags:
-
-```
-/research-loop "your tension" 6h --domain "fintech, open banking" --exclude "crypto"
-```
-
-Start from an existing draft (skips discovery):
-
-```
-/research-loop research/my-paper/draft-v2.md 4h
+/research-loop "your topic here" 8h
 ```
 
 ---
@@ -45,7 +29,7 @@ Start from an existing draft (skips discovery):
 
 ```mermaid
 flowchart TD
-    START["/research-loop tension 8h"]
+    START["/research-loop topic 8h"]
     START --> CONTROLLER
 
     subgraph CONTROLLER["research-loop  —  controller"]
