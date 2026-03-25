@@ -29,36 +29,47 @@ claude
 
 ```mermaid
 flowchart TD
-    START["/research-loop topic 8h"]
-    START --> CONTROLLER
+    START(["/research-loop topic 8h"])
+    START --> RL
 
-    subgraph CONTROLLER["research-loop  —  controller"]
-        direction TB
+    RL["`**research-loop**
+    controller agent`"]
 
-        subgraph DISC["DISCOVERY LOOP  ~30% of budget"]
-            D1["paper-depth-editor\nreads discovery-log\noutputs exploration directions"]
-            D2["research-worker x N\nparallel Exa.ai search\none worker per direction"]
-            D3[("discovery-log.md")]
-            D1 --> D2 --> D3 --> D1
-        end
-
-        TRANSITION["TRANSITION\nsketch skeleton  →  draft-v1.md"]
-
-        subgraph DEEP["DEEPENING LOOP  ~70% of budget"]
-            P1["paper-depth-editor\nreads draft + revisions\noutputs evidence gap questions"]
-            P2["research-worker x N\nparallel Exa.ai search\none worker per gap"]
-            P3["paper-reviewer-adversarial\ngates each finding\nAPPROVE / REJECT"]
-            P4[("draft-vN.md\nmerge approved findings")]
-            P1 --> P2 --> P3 --> P4 --> P1
-        end
-
-        EDITORIAL["paper-reviewer-editorial\nfinal rewrite pass"]
-
-        DISC -->|"skeleton ready"| TRANSITION --> DEEP
-        DEEP -->|"saturated or budget exhausted"| EDITORIAL
+    subgraph DISC["DISCOVERY LOOP  ~30% of budget"]
+        D1["`**paper-depth-editor**
+        reads discovery-log
+        outputs exploration directions`"]
+        D2["`**research-worker x N**
+        parallel Exa.ai search
+        one worker per direction`"]
+        D3[("discovery-log.md")]
+        D1 --> D2 --> D3 --> D1
     end
 
-    EDITORIAL --> FINAL[/"draft-final.md"/]
+    TRANSITION("sketch skeleton
+    expand to draft-v1.md")
+
+    subgraph DEEP["DEEPENING LOOP  ~70% of budget"]
+        P1["`**paper-depth-editor**
+        reads draft + revisions
+        outputs evidence gap questions`"]
+        P2["`**research-worker x N**
+        parallel Exa.ai search
+        one worker per gap`"]
+        P3["`**paper-reviewer-adversarial**
+        gates each finding
+        APPROVE / REJECT`"]
+        P4[("draft-vN.md")]
+        P1 --> P2 --> P3 --> P4 --> P1
+    end
+
+    ED["`**paper-reviewer-editorial**
+    final rewrite pass`"]
+
+    RL --> DISC
+    DISC -->|"skeleton ready"| TRANSITION --> DEEP
+    DEEP -->|"saturated or budget exhausted"| ED
+    ED --> FINAL[("draft-final.md")]
 ```
 
 ### State files
