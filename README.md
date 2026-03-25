@@ -8,10 +8,29 @@ Built on Claude and [Exa.ai](https://exa.ai).
 
 ## Setup
 
-```bash
-export ANTHROPIC_API_KEY=your_key
-export EXA_API_KEY=your_key
+**Anthropic access** — one of:
+- Enterprise / SSO users: run `claude` and log in via your organisation's SSO. No API key needed.
+- Individual users: get an API key from [console.anthropic.com](https://console.anthropic.com) and set it:
+  ```bash
+  export ANTHROPIC_API_KEY=your_key
+  ```
+
+**Exa access** (optional — enables live web search):
+Get an API key from [dashboard.exa.ai](https://dashboard.exa.ai) and add the MCP server to your Claude Code settings (`~/.claude/settings.json`):
+```json
+{
+  "mcpServers": {
+    "exa": {
+      "command": "npx",
+      "args": ["-y", "exa-mcp-server"],
+      "env": {
+        "EXA_API_KEY": "your_exa_key"
+      }
+    }
+  }
+}
 ```
+Without Exa, research workers fall back to fetching URLs directly — live search is disabled.
 
 ## Usage
 
