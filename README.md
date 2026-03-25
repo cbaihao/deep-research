@@ -43,27 +43,38 @@ Start from an existing draft (skips discovery):
 
 ## How it works
 
-```
-/research-loop "tension" 8h
-        │
-        ▼
- research-loop (controller)
-        │
-        │  DISCOVERY  (~30% of budget)
-        ├─ paper-depth-editor        reads findings → outputs exploration directions
-        ├─ research-worker ×N        parallel Exa.ai search, append to discovery-log.md
-        │  [repeat until thesis skeleton is ready]
-        │
-        │  TRANSITION  skeleton → draft-v0.md → draft-v1.md
-        │
-        │  DEEPENING  (~70% of budget)
-        ├─ paper-depth-editor        reads draft + revision log → outputs evidence gaps
-        ├─ research-worker ×N        parallel search to fill gaps
-        ├─ paper-reviewer-adversarial  gates findings: APPROVE / REJECT
-        ├─ merge approved findings → draft-v2.md, draft-v3.md, ...
-        │  [repeat until saturated or budget exhausted]
-        │
-        └─ paper-reviewer-editorial  final pass → draft-final.md
+```mermaid
+flowchart TD
+    A(["/research-loop &quot;tension&quot; 8h"]) --> B
+
+    subgraph B["research-loop  (controller)"]
+        direction TB
+
+        subgraph DISC["DISCOVERY LOOP  · ~30% of cycle budget"]
+            direction TB
+            D1["📄 paper-depth-editor\nreads discovery-log\noutputs exploration directions"]
+            D2["🔍 research-worker × N\nparallel Exa.ai search\n(one worker per direction)"]
+            D3[("discovery-log.md\nappend findings")]
+            D1 --> D2 --> D3 --> D1
+        end
+
+        T["TRANSITION\nsketch thesis skeleton\nexpand to draft-v1.md"]
+
+        subgraph DEEP["DEEPENING LOOP  · ~70% of cycle budget"]
+            direction TB
+            P1["📄 paper-depth-editor\nreads draft + revisions\noutputs evidence gap questions"]
+            P2["🔍 research-worker × N\nparallel Exa.ai search\n(one worker per gap)"]
+            P3["⚔️ paper-reviewer-adversarial\ngates each finding\nAPPROVE / REJECT"]
+            P4[("draft-vN.md\nmerge approved findings\nincrement version")]
+            P1 --> P2 --> P3 --> P4 --> P1
+        end
+
+        E["✏️ paper-reviewer-editorial\nfinal rewrite pass"]
+
+        DISC -->|"skeleton ready"| T --> DEEP -->|"saturated or budget exhausted"| E
+    end
+
+    E --> Z([("draft-final.md")])
 ```
 
 ### State files
