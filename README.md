@@ -46,49 +46,68 @@ claude
 
 ## How it works
 
-```mermaid
-flowchart TD
-    START(["/research-loop topic 8h"])
-    START --> RL
-
-    RL["`**research-loop**
-    controller agent`"]
-
-    subgraph DISC["DISCOVERY LOOP  ~30% of budget"]
-        D1["`**paper-depth-editor**
-        reads discovery-log
-        outputs exploration directions`"]
-        D2["`**research-worker x N**
-        parallel Exa.ai search
-        one worker per direction`"]
-        D3[("discovery-log.md")]
-        D1 --> D2 --> D3 --> D1
-    end
-
-    TRANSITION("sketch skeleton
-    expand to draft-v1.md")
-
-    subgraph DEEP["DEEPENING LOOP  ~70% of budget"]
-        P1["`**paper-depth-editor**
-        reads draft + revisions
-        outputs evidence gap questions`"]
-        P2["`**research-worker x N**
-        parallel Exa.ai search
-        one worker per gap`"]
-        P3["`**paper-reviewer-adversarial**
-        gates each finding
-        APPROVE / REJECT`"]
-        P4[("draft-vN.md")]
-        P1 --> P2 --> P3 --> P4 --> P1
-    end
-
-    ED["`**paper-reviewer-editorial**
-    final rewrite pass`"]
-
-    RL --> DISC
-    DISC -->|"skeleton ready"| TRANSITION --> DEEP
-    DEEP -->|"saturated or budget exhausted"| ED
-    ED --> FINAL[("draft-final.md")]
+```
+  /research-loop
+         │
+         ▼
+  ┌──────────────────────┐
+  │   research-loop      │
+  │       agent          │
+  └───────────┬──────────┘
+              │
+       ┌──────┴──────┐
+       │    PARSE    │  tension → paper_dir, cycle budget
+       └──────┬──────┘
+              │
+              ▼
+╔═════════════════════════════════════════════╗
+║           DISCOVERY LOOP × N               ║
+║                                            ║
+║  ┌──────────────┐                          ║
+║  │ Depth Editor │                          ║
+║  └──────┬───────┘                          ║
+║         │ parallel                         ║
+║  ┌──────┴──────────────────┐               ║
+║  │ Worker │ Worker │Worker │               ║
+║  └──────┬──────────────────┘               ║
+║         ▼                                  ║
+║  [discovery-log.md]                        ║
+║                                            ║
+║  repeat until READY                        ║
+╚══════════╪══════════════════════════════════╝
+           │ [discovery-log.md]
+           ▼
+╔═════════════════════════════════════════════╗
+║           DEEPENING LOOP × N (~70%)        ║
+║                                            ║
+║  ┌─────────────────────────────────────┐   ║
+║  │              Writer                 │   ║
+║  │  [discovery-log.md]                 │   ║
+║  │  [draft-vN.md]                      │   ║
+║  │  [revisions.md]                     │   ║
+║  │                                     │   ║
+║  │  ┌───────────────────────────────┐  │   ║
+║  │  │  Worker │ Worker │ Worker    │  │   ║
+║  │  └───────────────────────────────┘  │   ║
+║  └──────────────────┬──────────────────┘   ║
+║                     │                      ║
+║              [draft-vN.md]                 ║
+║                     │                      ║
+║              ┌──────▼──────┐               ║
+║              │ Adversarial │               ║
+║              └──────┬──────┘               ║
+║                     │                      ║
+║              [revisions.md]                ║
+║                     │                      ║
+║              └─────────────── Writer ↑     ║
+║                                            ║
+║  repeat until SATURATED                    ║
+╚══════════╪══════════════════════════════════╝
+           │
+           ▼
+    ┌──────────────────┐
+    │ Editorial Agent  │ → [draft-final.md]
+    └──────────────────┘
 ```
 
 ### State files
