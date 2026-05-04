@@ -24,6 +24,7 @@ You run an autonomous research improvement loop. Two phases: discovery (broad, e
 - **paper_dir** — directory to write all output files (e.g. `research/my-paper/`)
 - **max_cycles** — total cycle budget across both modes
 - **discovery_cycles** — max cycles in discovery mode before forcing transition (default: 4)
+- **auto_discover** — boolean (default: true). If true, research workers may follow citations and expand into adjacent sources they encounter. If false, workers stay strictly within the declared domain and the pre-approved source list.
 
 ---
 
@@ -61,6 +62,7 @@ Append to `paper_dir/scratchpad/revisions.md`:
 *Exclude: [exclude]*
 *Mode: discovery*
 *Max cycles: [max_cycles] ([discovery_cycles] discovery + [max_cycles - discovery_cycles] deepening)*
+*Auto source discovery: [auto_discover]*
 *Loop version: v2 (adversarial-led deepening, writer-owned argument)*
 ```
 
@@ -102,6 +104,7 @@ For each exploration direction in the depth brief, invoke one general-purpose ag
 - tension and domain as context
 - Instruction: "You are in discovery mode. Explore broadly. Do not anchor on confirming the tension's obvious interpretation. Prioritise finding data that surprises, contradicts, or reframes."
 - discovery_log_path: read this before searching to avoid duplicating prior work
+- auto_discover: if true, workers may follow citations and run additional searches beyond the assigned direction; if false, stay strictly within the assigned direction and declared domain
 
 Invoke all workers simultaneously. Wait for all to return.
 
@@ -196,6 +199,7 @@ Invoke a general-purpose agent with the full contents of `paper-writer.md` as in
 - paper_dir: [paper_dir]
 - next_draft_path: [paper_dir/scratchpad/draft-v{N+1}.md] (increment from current draft version)
 - human_feedback: current contents of `paper_dir/human-feedback.md` (re-read fresh each cycle)
+- auto_discover: [auto_discover] — pass through to any research workers spawned during deepening
 
 Wait for writer to complete. The writer will internally spawn research workers, receive findings, synthesize, and produce the next draft.
 

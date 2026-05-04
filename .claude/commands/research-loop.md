@@ -48,37 +48,96 @@ Determine start mode:
 
 If no arguments: ask the user for their tension statement.
 
-## Step 2 — Compute cycle budget
+---
+
+## Step 2 — Pre-flight: present sources and confirm settings
+
+Before computing the cycle budget or launching anything, do all three of the following interactively.
+
+### 2a — Present planned sources
+
+Based on the tension statement and domain (if provided), derive the research areas and source types the workers will target. Present them clearly:
 
 ```
-max_cycles = floor(hours * 2)   # ~30 min per cycle
+📚 **Planned research sources**
+
+**Search domains:**
+- [Derive 4–8 specific domains from the tension, e.g. "stablecoin adoption data", "USDC/USDT market share reports", "payment rails benchmarks"]
+
+**Source types:**
+- Exa web search (live — academic papers, news, analyst reports, company blogs)
+- Direct URL fetches (when specific sources are known)
+- [Any domain-specific outlets implied by the tension, e.g. "Fed/BIS publications" for macro topics, "GitHub/whitepapers" for technical topics]
+
+**Excluded:** [exclusions if provided, else "none"]
+```
+
+### 2b — Ask for iteration count
+
+Ask the user:
+
+> How many total research cycles would you like to run?
+> **Suggested: 4 cycles** (≈2h) — 1–2 discovery + 2–3 deepening.
+> You can go up to 8 cycles (≈4h) for deeper coverage, or as few as 2 (≈1h) for a quick pass.
+> Enter a number (or press Enter for the default of 4):
+
+Wait for user response. Use their answer as `user_cycles`. If they press Enter or give no number, default to 4.
+
+### 2c — Ask about auto source discovery
+
+Ask the user:
+
+> Should research workers be allowed to **auto-discover additional sources** beyond the planned domains above?
+> This lets workers follow citations, find related papers, and expand into adjacent topics they encounter mid-search.
+> (y/n, default: y):
+
+Wait for user response. Store as `auto_discover` (true/false, default true).
+
+---
+
+## Step 3 — Compute cycle budget
+
+Use `user_cycles` (from Step 2b) as `max_cycles`.
+
+```
+max_cycles = user_cycles   # from user input, default 4
 discovery_cycles = min(4, floor(max_cycles * 0.3))
 ```
 
 Minimum: 2 discovery + 2 deepening = 4 cycles total.
 
-## Step 3 — Resolve revision log
+Pass `auto_discover` to the research-loop agent so workers know whether to follow new sources they find (true) or stay strictly within the declared domains (false).
+
+---
+
+## Step 4 — Resolve revision log
 
 The revision log is `scratchpad/revisions.md` in `paper_dir`.
 The loop agent creates it if it does not exist.
 
-## Step 4 — Confirm and launch
+---
+
+## Step 5 — Confirm and launch
 
 Tell the user:
+
 > "Starting research loop on: **[tension or draft filename]**
 > Mode: [discovery → deepening | deepening only]
 > Budget: [max_cycles] cycles (~[hours]h) — [discovery_cycles] discovery + [max_cycles - discovery_cycles] deepening
+> Auto source discovery: [enabled | disabled]
 > Output: [paper_dir]
 >
 > **Deepening**: adversarial reads the draft each cycle → writer agent owns the argument → hybrid rewrite (affected sections + all openers + transitions)
 >
 > Running in background — I'll report back when complete."
 
-Then invoke the `research-loop` agent as a general-purpose agent, with the full contents of `.claude/agents/research-loop.md` as instructions. Pass all resolved parameters.
+Then invoke the `research-loop` agent as a general-purpose agent, with the full contents of `.claude/agents/research-loop.md` as instructions. Pass all resolved parameters including `auto_discover`.
 
 Run in the background.
 
-## Step 5 — On completion, report
+---
+
+## Step 6 — On completion, report
 
 - Final draft path
 - Cycles run (discovery + deepening)
