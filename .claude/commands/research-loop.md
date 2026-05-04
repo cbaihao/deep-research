@@ -74,14 +74,52 @@ Based on the tension statement and domain (if provided), derive the research are
 
 ### 2b — Ask for iteration count
 
-Ask the user:
+Print the following deepening loop diagram, then the multiple-choice question, together in one message so the user has context on what a cycle means:
 
-> How many total research cycles would you like to run?
-> **Suggested: 4 cycles** (≈2h) — 1–2 discovery + 2–3 deepening.
-> You can go up to 8 cycles (≈4h) for deeper coverage, or as few as 2 (≈1h) for a quick pass.
-> Enter a number (or press Enter for the default of 4):
+```
+┌─────────────────────────────────────────────────────────┐
+│              DEEPENING CYCLE  (repeats N times)         │
+│                                                         │
+│   draft-vN.md                                           │
+│        │                                                │
+│        ▼                                                │
+│  ┌─────────────┐                                        │
+│  │ Adversarial │  ← reads the full draft               │
+│  │   Agent     │    finds the 3 weakest arguments       │
+│  └──────┬──────┘                                        │
+│         │  critique + research questions                │
+│         ▼                                                │
+│  ┌─────────────────────────────────────────────┐        │
+│  │              Writer Agent                   │        │
+│  │                                             │        │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐   │        │
+│  │  │ Worker 1 │ │ Worker 2 │ │ Worker 3 │   │        │
+│  │  │  (Exa)   │ │  (Exa)   │ │  (Exa)   │   │        │
+│  │  └──────────┘ └──────────┘ └──────────┘   │        │
+│  │         findings ↑  ↑  ↑                   │        │
+│  │  synthesize → hybrid rewrite               │        │
+│  └─────────────────┬───────────────────────── ┘        │
+│                    │                                    │
+│               draft-v(N+1).md                          │
+│                    │                                    │
+│                    └──── loop ↑ (until SATURATED)      │
+└─────────────────────────────────────────────────────────┘
+```
 
-Wait for user response. Use their answer as `user_cycles`. If they press Enter or give no number, default to 4.
+Then ask:
+
+```
+How many total cycles would you like to run?
+
+  A)  2 cycles  (~1h)  — quick pass, light coverage
+  B)  4 cycles  (~2h)  — recommended ✓
+  C)  6 cycles  (~3h)  — deep coverage
+  D)  8 cycles  (~4h)  — exhaustive
+
+Enter A / B / C / D, or type a custom number (default: B):
+```
+
+Wait for user response. Map A→2, B→4, C→6, D→8, or use the number directly. Use result as `user_cycles`. Default to 4 if no input.
 
 ### 2c — Ask about auto source discovery
 
